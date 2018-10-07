@@ -2,17 +2,19 @@ import java.util.*;
 
 public class Game {
 
-	private String[][] board;
+	private String[][] board = 
+	{		{"1", "2", "3"},
+			{"4", "5", "6",},
+			{"7", "8", "9"}};
 
 	public Game() {
 		System.out.println("Let's play Tic-tac-toe. You start. \n");
-		initializeBoard();
 		startGame();
 	}
 
 	private boolean rowWinCheck() {
 		 for (int i = 0; i < board.length; ++i) {
-	 		if (board[i][0] == board[i][1] && board[i][i] == board[i][2]) {
+	 		if (board[i][0] == board[i][1] && board[i][1] == board[i][2]) {
 	 			return true;
 	 		}
 		 }
@@ -21,7 +23,7 @@ public class Game {
 
 	private boolean columnWinCheck() {
 		for (int i = 0; i < board.length; ++i) {
-			if (board[0][i] == board[1][i] && board[i][i] == board[2][i]) {
+			if (board[0][i] == board[1][i] && board[1][i] == board[2][i]) {
 				return true;
 			}
 		}
@@ -29,15 +31,26 @@ public class Game {
 	}
 
 	private boolean diagonalWinCheck() {
-		return (board[0][0] == board[1][1] && board[0][0] == board[2][2]) || (board[0][1] == board[1][1] && board[0][0] == board[2][0]);
+		return (board[0][0] == board[1][1] && board[0][0] == board[2][2]) || (board[0][2] == board[1][1] && board[0][2] == board[2][0]);
 	}
 
 	private boolean didWin() {
 		return rowWinCheck() || columnWinCheck() || diagonalWinCheck();
 	}
 
+	private boolean didTie() {
+		for (int i = 0; i < board.length; ++i) {
+			for (int j = 0; j < board[i].length; ++j) {
+				if (board[i][j] != "X" && board[i][j] != "O") {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
 	private boolean inRange(int choice) {
-		return choice > 0 && choice < 10;
+		return choice > 0 && choice < 10 && board[(choice - 1) / 3][(choice - 1) % 3] != "O" && board[(choice - 1) / 3][(choice - 1) % 3] != "X";
 	}
 
 	private void printBoard() {
@@ -65,8 +78,16 @@ public class Game {
 		Opponent opponent = new Opponent();
 		Scanner s = new Scanner(System.in);
 		printBoard();
-		int choice = 0;
-		while (!didWin()) {
+		while (true) {
+			if (didWin()) {
+				System.out.println("O wins! You are incompetent!");
+				break;
+			}
+			if (didTie()) {
+				System.out.println("It's a tie!");
+				break;
+			}
+			int choice = 0;
 			while (!inRange(choice)) {
 				System.out.print("Your Move: ");
 				choice = s.nextInt();
@@ -74,6 +95,19 @@ public class Game {
 			board[(choice - 1) / 3][(choice - 1) % 3] = "X";
 			printBoard();
 			System.out.println();
+			if (didWin()) {
+				System.out.println("X wins! Your AI is stupid.");
+				break;
+			}
+			if (didTie()) {
+				System.out.println("It's a tie!");
+				break;
+			}
+			State bestState = opponent.makeMove(board);
+			board = bestState.getBoard();
+			printBoard();
+			System.out.println();
 		}
+		System.out.println("Game Over!");
 	}
 }

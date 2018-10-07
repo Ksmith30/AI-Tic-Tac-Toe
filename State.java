@@ -1,13 +1,15 @@
-import java.util.*;
-
-public class State {
+class State {
 	
 	private String[][] board;
 	private int cost;
-	private State parentState;
 
-	public State(String[][] board) {
-		this.board = board;
+	State(String[][] board) {
+		this.board = new String[board.length][board.length];
+		for (int i = 0; i < board.length; ++i) {
+			for (int j = 0; j < board[i].length; ++j) {
+				this.board[i][j] = board[i][j];
+			}
+		}
 
 		if (didWin()) {
 			this.cost = 1;
@@ -37,10 +39,10 @@ public class State {
 	}
 
 	private boolean diagonalWinCheck(String character) {
-		return (board[0][0] == character && board[1][1] == character && board[2][2] == character) || (board[0][0] == character && board[1][1] == character && board[2][0] == character);
+		return (board[0][0] == character && board[1][1] == character && board[2][2] == character) || (board[0][2] == character && board[1][1] == character && board[2][0] == character);
 	}
 
-	public boolean didWin() {
+	private boolean didWin() {
 		return rowWinCheck("O") || columnWinCheck("O") || diagonalWinCheck("O");
 	}
 
@@ -48,19 +50,15 @@ public class State {
 		return rowWinCheck("X") || columnWinCheck("X") || diagonalWinCheck("X");
 	}
 
-	public String[][] getBoard() {
+	String[][] getBoard() {
 		return this.board;
 	}
 
-	public int getCost() {
+	int getCost() {
 		return this.cost;
 	}
 
-	public State getParentState() {
-		return this.parentState;
-	}
-
-	public void setParentState(State parentState) {
-		this.parentState = parentState;
+	void setCost(int cost) {
+		this.cost = cost;
 	}
 }
